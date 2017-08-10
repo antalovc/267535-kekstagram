@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Антон Овчинников](https://up.htmlacademy.ru/javascript/10/user/267535).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Лепёшкин](https://up.htmlacademy.ru/javascript/10/user/144641).
 
 ---
 
