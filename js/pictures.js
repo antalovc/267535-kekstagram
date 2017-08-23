@@ -7,17 +7,6 @@ var COMMENTS_MIN = 1;
 var COMMENTS_MAX = 2;
 var COMMENTS = ['Всё отлично!', 'В целом всё неплохо. Но не всё.', 'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.', 'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.', 'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.', 'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 
-var PICTURE_TEMPLATE_SELECTOR = '#picture-template';
-var PICTURES_BLOCK_SELECTOR = '.pictures';
-var PICTURE_LIKES_SELECTOR = '.picture-likes';
-var PICTURE_COMMENTS_SELECTOR = '.picture-comments';
-var UPLOAD_OVERLAY_SELECTOR = '.upload-overlay';
-var GALLERY_OVERLAY_SELECTOR = '.gallery-overlay';
-var GALLERY_OVERLAY_IMAGE_SELECTOR = '.gallery-overlay-image';
-var LIKES_COUNT_SELECTOR = '.likes-count';
-var COMMENTS_COUNT_SELECTOR = '.comments-count';
-var IMAGE_SELECTOR = 'img';
-
 var generateRandomIntegerFromRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -81,11 +70,13 @@ var setElementPictureData = function (pictureData, pictureElement, imageSelector
 
 var createPictureFromTemplate = function (pictureData, pictureTemplate) {
   var pictureElement = pictureTemplate.cloneNode(true);
-  setElementPictureData(pictureData, pictureElement, IMAGE_SELECTOR, PICTURE_LIKES_SELECTOR, PICTURE_COMMENTS_SELECTOR);
+  setElementPictureData(pictureData, pictureElement, 'img', '.picture-likes', '.picture-comments');
   return pictureElement;
 };
 
-var drawPictures = function (pictures, picturesBlock, pictureTemplate) {
+var drawPictures = function (pictures) {
+  var picturesBlock = document.querySelector('.pictures');
+  var pictureTemplate = document.querySelector('#picture-template').content;
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < pictures.length; i++) {
     fragment.appendChild(createPictureFromTemplate(pictures[i], pictureTemplate));
@@ -94,12 +85,12 @@ var drawPictures = function (pictures, picturesBlock, pictureTemplate) {
 };
 
 var pictures = generatePictureData(PICTURES_NUMBER, LIKES_MIN, LIKES_MAX, COMMENTS, COMMENTS_MIN, COMMENTS_MAX);
-drawPictures(pictures, document.querySelector(PICTURES_BLOCK_SELECTOR), document.querySelector(PICTURE_TEMPLATE_SELECTOR).content);
+drawPictures(pictures);
 
-document.querySelector(UPLOAD_OVERLAY_SELECTOR).classList.add('hidden');
+document.querySelector('.upload-overlay').classList.add('hidden');
 
-var galleryOverlay = document.querySelector(GALLERY_OVERLAY_SELECTOR);
+var galleryOverlay = document.querySelector('.gallery-overlay');
 galleryOverlay.classList.remove('hidden');
-setElementPictureData(pictures[0], galleryOverlay, GALLERY_OVERLAY_IMAGE_SELECTOR, LIKES_COUNT_SELECTOR, COMMENTS_COUNT_SELECTOR);
+setElementPictureData(pictures[0], galleryOverlay, '.gallery-overlay-image', '.likes-count', '.comments-count');
 
 
