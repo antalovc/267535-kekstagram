@@ -143,7 +143,7 @@ var addEvents = function () {
         evt.preventDefault();
       }
     });
-  };
+  }
 };
 
 document.querySelector('.upload-overlay').classList.add('hidden');
