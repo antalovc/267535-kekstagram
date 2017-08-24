@@ -84,13 +84,15 @@ var drawPictures = function (pictures) {
   picturesBlock.appendChild(fragment);
 };
 
+var showOverlay = function (picture) {
+  var galleryOverlay = document.querySelector('.gallery-overlay');
+  galleryOverlay.classList.remove('hidden');
+  setElementPictureData(picture, galleryOverlay, '.gallery-overlay-image', '.likes-count', '.comments-count');
+};
+
 var pictures = generatePictureData(PICTURES_NUMBER, LIKES_MIN, LIKES_MAX, COMMENTS, COMMENTS_MIN, COMMENTS_MAX);
 drawPictures(pictures);
 
 document.querySelector('.upload-overlay').classList.add('hidden');
 
-var galleryOverlay = document.querySelector('.gallery-overlay');
-galleryOverlay.classList.remove('hidden');
-setElementPictureData(pictures[0], galleryOverlay, '.gallery-overlay-image', '.likes-count', '.comments-count');
-
-
+showOverlay(pictures[0]);
