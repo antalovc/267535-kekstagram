@@ -1,11 +1,18 @@
 'use strict';
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 var PICTURES_NUMBER = 25;
 var LIKES_MIN = 15;
 var LIKES_MAX = 200;
 var COMMENTS_MIN = 1;
 var COMMENTS_MAX = 2;
 var COMMENTS = ['Всё отлично!', 'В целом всё неплохо. Но не всё.', 'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.', 'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.', 'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.', 'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
+var OVERLAY_IMAGE_SELECTOR = 'img';
+
+var galleryOverlay = document.querySelector('.gallery-overlay');
+var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
 
 var generateRandomIntegerFromRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -70,29 +77,78 @@ var setElementPictureData = function (pictureData, pictureElement, imageSelector
 
 var createPictureFromTemplate = function (pictureData, pictureTemplate) {
   var pictureElement = pictureTemplate.cloneNode(true);
-  setElementPictureData(pictureData, pictureElement, 'img', '.picture-likes', '.picture-comments');
+  setElementPictureData(pictureData, pictureElement, OVERLAY_IMAGE_SELECTOR, '.picture-likes', '.picture-comments');
   return pictureElement;
+};
+
+var onGalleryOverlayEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    hideGalleryOverlay();
+  }
+};
+
+var onGalleryOverlayCloseEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    hideGalleryOverlay();
+  }
+};
+
+var showGalleryOverlay = function (picture) {
+  setElementPictureData(picture, galleryOverlay, '.gallery-overlay-image', '.likes-count', '.comments-count');
+  document.addEventListener('keydown', onGalleryOverlayEscPress);
+  galleryOverlayClose.addEventListener('keydown', onGalleryOverlayCloseEnterPress);
+  galleryOverlayClose.addEventListener('click', hideGalleryOverlay);
+  galleryOverlay.classList.remove('hidden');
+};
+
+var showGalleryOverlayByUrl = function (pictureUrl) {
+  var pictureData = pictures.find(function (picture) {
+    return picture.url === pictureUrl;
+  });
+  showGalleryOverlay(pictureData);
+};
+
+var hideGalleryOverlay = function () {
+  document.removeEventListener('keydown', onGalleryOverlayEscPress);
+  galleryOverlayClose.removeEventListener('keydown', onGalleryOverlayCloseEnterPress);
+  galleryOverlayClose.removeEventListener('click', hideGalleryOverlay);
+  galleryOverlay.classList.add('hidden');
 };
 
 var drawPictures = function (pictures) {
   var picturesBlock = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture-template').content;
   var fragment = document.createDocumentFragment();
+
   for (var i = 0; i < pictures.length; i++) {
-    fragment.appendChild(createPictureFromTemplate(pictures[i], pictureTemplate));
+    var pictureElement = createPictureFromTemplate(pictures[i], pictureTemplate);
+    fragment.appendChild(pictureElement);
   }
+
   picturesBlock.appendChild(fragment);
 };
 
-var showOverlay = function (picture) {
-  var galleryOverlay = document.querySelector('.gallery-overlay');
-  galleryOverlay.classList.remove('hidden');
-  setElementPictureData(picture, galleryOverlay, '.gallery-overlay-image', '.likes-count', '.comments-count');
-};
+var addEvents = function () {
+  var pictureElements = document.querySelectorAll('.picture');
 
-var pictures = generatePictureData(PICTURES_NUMBER, LIKES_MIN, LIKES_MAX, COMMENTS, COMMENTS_MIN, COMMENTS_MAX);
-drawPictures(pictures);
+  for (var k = 0; k < pictureElements.length; k++) {
+    pictureElements[k].addEventListener('click', function (evt) {
+      showGalleryOverlayByUrl(evt.currentTarget.querySelector(OVERLAY_IMAGE_SELECTOR).getAttribute('src'));
+      evt.preventDefault();
+    });
+
+    pictureElements[k].addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        showGalleryOverlayByUrl(evt.currentTarget.querySelector(OVERLAY_IMAGE_SELECTOR).getAttribute('src'));
+        evt.preventDefault();
+      }
+    });
+  }
+};
 
 document.querySelector('.upload-overlay').classList.add('hidden');
 
-showOverlay(pictures[0]);
+var pictures = generatePictureData(PICTURES_NUMBER, LIKES_MIN, LIKES_MAX, COMMENTS, COMMENTS_MIN, COMMENTS_MAX);
+drawPictures(pictures);
+addEvents();
+
