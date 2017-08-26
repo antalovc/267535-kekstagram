@@ -146,9 +146,144 @@ var addEvents = function () {
   }
 };
 
-document.querySelector('.upload-overlay').classList.add('hidden');
-
 var pictures = generatePictureData(PICTURES_NUMBER, LIKES_MIN, LIKES_MAX, COMMENTS, COMMENTS_MIN, COMMENTS_MAX);
 drawPictures(pictures);
 addEvents();
 
+// NEW PART
+
+var uploadForm = document.querySelector('#upload-select-image');
+var uploadInput = uploadForm.querySelector('#upload-file');
+var framingOverlay = uploadForm.querySelector('.upload-overlay'); // форма кадрирования
+var framingOverlayCancel = framingOverlay.querySelector('.upload-form-cancel');
+var framingOverlayComment = framingOverlay.querySelector('.upload-form-description');
+var framingOverlayHashtag = framingOverlay.querySelector('.upload-form-hashtags');
+
+var onFramingOverlayCancelEscPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    hideFramingOverlay();
+  }
+};
+
+var onFramingOverlayEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE && document.activeElement !== framingOverlayComment) {
+    hideFramingOverlay();
+  }
+};
+
+var showFramingOverlay = function () {
+  document.addEventListener('keydown', onFramingOverlayEscPress);
+  // framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);
+  // framingOverlayCancel.addEventListener('click', hideFramingOverlay);
+  framingOverlay.classList.remove('hidden');
+};
+
+var hideFramingOverlay = function () {
+  framingOverlay.classList.add('hidden');
+  document.removeEventListener('keydown', onFramingOverlayEscPress);
+  // framingOverlayCancel.removeEventListener('keydown', onFramingOverlayCancelEscPress);
+  // ramingOverlayCancel.removeEventListener('click', hideFramingOverlay);
+  uploadInput.click();
+};
+
+var framingOverlayScale = framingOverlay.querySelector('.upload-resize-controls-value');
+var framingOverlayPreview = framingOverlay.querySelector('.effect-image-preview');
+var filterElements = framingOverlay.querySelectorAll('.upload-effect input[type=radio]');
+
+var changeFramingOverlayScale = function (increment) {
+  var delta = 25;
+  var value = parseInt(framingOverlayScale.value, 10);
+  value = increment ? value + delta : value - delta;
+  value = (value > 100) ? 100 : value;
+  value = (value < 25) ? 25 : value;
+  framingOverlayScale.value = value + '%';
+  framingOverlayPreview.style.transform = 'scale(' + value / 100 + ')';
+};
+
+var incrementFramingOverlayScale = function () {
+  changeFramingOverlayScale(true);
+};
+
+var decrementFramingOverlayScale = function () {
+  changeFramingOverlayScale(false);
+};
+
+framingOverlay.querySelector('.upload-resize-controls-button-inc').addEventListener('click', incrementFramingOverlayScale);
+framingOverlay.querySelector('.upload-resize-controls-button-dec').addEventListener('click', decrementFramingOverlayScale);
+
+var currentFilter = '';
+for (var n = 0; n < filterElements.length; n++) {
+  filterElements[n].addEventListener('click', function (evt) {
+    if (currentFilter) {
+      framingOverlayPreview.classList.remove(currentFilter);
+    }
+    currentFilter = evt.target.getAttribute('id').substring('upload-'.length);
+    framingOverlayPreview.classList.add(currentFilter);
+  });
+}
+
+framingOverlay.classList.add('hidden');
+framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);// a0
+framingOverlayCancel.addEventListener('click', hideFramingOverlay);// a0
+uploadInput.addEventListener('change', function () {
+  if (uploadInput.value) {
+    showFramingOverlay();
+  }
+});
+
+var onInputInvalid = function (evt) {
+  var target = evt.target;
+  target.style.borderColor = target.validity.valid ? 'initial' : 'red';
+};
+
+framingOverlayComment.addEventListener('invalid', onInputInvalid);
+framingOverlayHashtag.addEventListener('invalid', onInputInvalid);
+
+var checkHashTagValidity = function () {
+  var value = framingOverlayHashtag.value;
+  var hashTags = [];
+  var hashTagsLength = 0;
+  var MAX_HASTAGS_NUMBER = 5;
+  var MAX_HASHTAG_LENGTH = 20;
+
+  if (value) {
+    hashTags = value.match(/(#\w+)/ig);
+    if (hashTags) {
+      hashTagsLength = hashTags.length;
+    }
+
+    if (!hashTagsLength) {
+      return 'Неверный формат хэштег(ов)';
+    } else if (hashTagsLength > MAX_HASTAGS_NUMBER) {
+      return 'Количество хэштегов не должно превышать ' + MAX_HASTAGS_NUMBER;
+    }
+    for (var i = 0; i < hashTags.length; i++) {
+      if (hashTags[i].length > MAX_HASHTAG_LENGTH + 1) {
+        return 'Длина хэштега не должна превышать ' + MAX_HASHTAG_LENGTH + ' символов';
+      }
+      for (var j = 0; j < hashTags.length; j++) {
+        if (hashTags[j] === hashTags[i] && i !== j) {
+          return 'Хэштеги не могут дублироваться';
+        }
+      }
+    }
+  }
+
+  return '';
+};
+
+framingOverlayHashtag.addEventListener('change', function () {
+  framingOverlayHashtag.setCustomValidity(checkHashTagValidity());
+});
+
+uploadForm.addEventListener('submit', function (evt) {
+  evt.preventDefault();
+  if (uploadForm.checkValidity()) {
+    uploadForm.submit();
+    framingOverlayScale.value = '100%';
+    framingOverlayPreview.style.transform = 'scale(1.00)';
+
+    framingOverlayComment.value = '';
+    framingOverlayHashtag.value = '';
+  }
+});
