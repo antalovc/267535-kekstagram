@@ -171,24 +171,28 @@ var onFramingOverlayEscPress = function (evt) {
   }
 };
 
+var resetFramingOverlay = function () {
+  framingOverlayScale.value = '100%';
+  framingOverlayPreview.style.transform = 'scale(1.00)';
+
+  framingOverlayComment.value = '';
+  framingOverlayHashtag.value = '';
+}
+
 var showFramingOverlay = function () {
   document.addEventListener('keydown', onFramingOverlayEscPress);
-  // framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);
-  // framingOverlayCancel.addEventListener('click', hideFramingOverlay);
   framingOverlay.classList.remove('hidden');
 };
 
 var hideFramingOverlay = function () {
   framingOverlay.classList.add('hidden');
   document.removeEventListener('keydown', onFramingOverlayEscPress);
-  // framingOverlayCancel.removeEventListener('keydown', onFramingOverlayCancelEscPress);
-  // ramingOverlayCancel.removeEventListener('click', hideFramingOverlay);
+  resetFramingOverlay();
   uploadInput.click();
 };
 
 var framingOverlayScale = framingOverlay.querySelector('.upload-resize-controls-value');
 var framingOverlayPreview = framingOverlay.querySelector('.effect-image-preview');
-var filterElements = framingOverlay.querySelectorAll('.upload-effect input[type=radio]');
 
 var changeFramingOverlayScale = function (increment) {
   var delta = 25;
@@ -212,15 +216,15 @@ framingOverlay.querySelector('.upload-resize-controls-button-inc').addEventListe
 framingOverlay.querySelector('.upload-resize-controls-button-dec').addEventListener('click', decrementFramingOverlayScale);
 
 var currentFilter = '';
-for (var n = 0; n < filterElements.length; n++) {
-  filterElements[n].addEventListener('click', function (evt) {
+uploadForm.querySelector('.upload-effect-controls').addEventListener('click', function (evt) {
+  if (evt.target.getAttribute('type') === 'radio') {
     if (currentFilter) {
       framingOverlayPreview.classList.remove(currentFilter);
     }
     currentFilter = evt.target.getAttribute('id').substring('upload-'.length);
     framingOverlayPreview.classList.add(currentFilter);
-  });
-}
+  }
+})
 
 framingOverlay.classList.add('hidden');
 framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);// a0
@@ -247,7 +251,7 @@ var checkHashTagValidity = function () {
   var MAX_HASHTAG_LENGTH = 20;
 
   if (value) {
-    hashTags = value.match(/(#\w+)/ig);
+    hashTags = value.match(/([#\w-_]+)/ig);
     if (hashTags) {
       hashTagsLength = hashTags.length;
     }
@@ -258,7 +262,9 @@ var checkHashTagValidity = function () {
       return 'Количество хэштегов не должно превышать ' + MAX_HASTAGS_NUMBER;
     }
     for (var i = 0; i < hashTags.length; i++) {
-      if (hashTags[i].length > MAX_HASHTAG_LENGTH + 1) {
+      if (hashTags[i].indexOf('#') !== 0) {
+        return 'Неверный формат хэштег(ов)';
+      } else if (hashTags[i].length > MAX_HASHTAG_LENGTH + 1) {
         return 'Длина хэштега не должна превышать ' + MAX_HASHTAG_LENGTH + ' символов';
       }
       for (var j = 0; j < hashTags.length; j++) {
@@ -280,10 +286,6 @@ uploadForm.addEventListener('submit', function (evt) {
   evt.preventDefault();
   if (uploadForm.checkValidity()) {
     uploadForm.submit();
-    framingOverlayScale.value = '100%';
-    framingOverlayPreview.style.transform = 'scale(1.00)';
-
-    framingOverlayComment.value = '';
-    framingOverlayHashtag.value = '';
+    resetFramingOverlay();
   }
 });
