@@ -177,7 +177,7 @@ var resetFramingOverlay = function () {
 
   framingOverlayComment.value = '';
   framingOverlayHashtag.value = '';
-}
+};
 
 var showFramingOverlay = function () {
   document.addEventListener('keydown', onFramingOverlayEscPress);
@@ -224,7 +224,7 @@ uploadForm.querySelector('.upload-effect-controls').addEventListener('click', fu
     currentFilter = evt.target.getAttribute('id').substring('upload-'.length);
     framingOverlayPreview.classList.add(currentFilter);
   }
-})
+});
 
 framingOverlay.classList.add('hidden');
 framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);// a0
