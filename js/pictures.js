@@ -251,7 +251,7 @@ var checkHashTagValidity = function () {
   var MAX_HASHTAG_LENGTH = 20;
 
   if (value) {
-    hashTags = value.match(/([#\w-_]+)/ig);
+    hashTags = value.match(/(#[-\w]+)/ig);
     if (hashTags) {
       hashTagsLength = hashTags.length;
     }
