@@ -188,7 +188,6 @@ var hideFramingOverlay = function () {
   framingOverlay.classList.add('hidden');
   document.removeEventListener('keydown', onFramingOverlayEscPress);
   resetFramingOverlay();
-  uploadInput.click();
 };
 
 var framingOverlayScale = framingOverlay.querySelector('.upload-resize-controls-value');
@@ -227,8 +226,8 @@ uploadForm.querySelector('.upload-effect-controls').addEventListener('click', fu
 });
 
 framingOverlay.classList.add('hidden');
-framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);// a0
-framingOverlayCancel.addEventListener('click', hideFramingOverlay);// a0
+framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);
+framingOverlayCancel.addEventListener('click', hideFramingOverlay);
 uploadInput.addEventListener('change', function () {
   if (uploadInput.value) {
     showFramingOverlay();
