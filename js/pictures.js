@@ -245,32 +245,39 @@ framingOverlayHashtag.addEventListener('invalid', onInputInvalid);
 var checkHashTagValidity = function () {
   var value = framingOverlayHashtag.value;
   var hashTags = [];
+  var splitLength = 0;
   var hashTagsLength = 0;
   var MAX_HASTAGS_NUMBER = 5;
   var MAX_HASHTAG_LENGTH = 20;
 
   if (value) {
-    hashTags = value.match(/(#[-\w]+)/ig);
-    if (hashTags) {
-      hashTagsLength = hashTags.length;
+    hashTags = value.split(' ');
+    splitLength = hashTags.length;
+
+    for (var i = 0; i < splitLength; i++) {
+      if (hashTags[i]) {
+
+        hashTagsLength++;
+
+        if (hashTags[i].indexOf('#') !== 0) {
+          return 'Неверный формат хэштег(ов)';
+        } else if (hashTags[i].length > MAX_HASHTAG_LENGTH + 1) {
+          return 'Длина хэштега не должна превышать ' + MAX_HASHTAG_LENGTH + ' символов';
+        }
+
+        for (var j = 0; j < splitLength; j++) {
+          if (hashTags[j] && hashTags[j] === hashTags[i] && i !== j) {
+            return 'Хэштеги не могут дублироваться';
+          }
+        }
+
+      }
     }
 
     if (!hashTagsLength) {
       return 'Неверный формат хэштег(ов)';
     } else if (hashTagsLength > MAX_HASTAGS_NUMBER) {
       return 'Количество хэштегов не должно превышать ' + MAX_HASTAGS_NUMBER;
-    }
-    for (var i = 0; i < hashTags.length; i++) {
-      if (hashTags[i].indexOf('#') !== 0) {
-        return 'Неверный формат хэштег(ов)';
-      } else if (hashTags[i].length > MAX_HASHTAG_LENGTH + 1) {
-        return 'Длина хэштега не должна превышать ' + MAX_HASHTAG_LENGTH + ' символов';
-      }
-      for (var j = 0; j < hashTags.length; j++) {
-        if (hashTags[j] === hashTags[i] && i !== j) {
-          return 'Хэштеги не могут дублироваться';
-        }
-      }
     }
   }
 
