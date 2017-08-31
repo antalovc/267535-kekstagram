@@ -2,6 +2,9 @@
 
 window.form = (function () {
 
+  var NONE_FILTER_ID = 'upload-effect-none';
+  var currentFilterId = NONE_FILTER_ID;
+
   var uploadForm = document.querySelector('#upload-select-image');
   var uploadInput = uploadForm.querySelector('#upload-file');
   var framingOverlay = uploadForm.querySelector('.upload-overlay'); // форма кадрирования
@@ -10,6 +13,9 @@ window.form = (function () {
   var framingOverlayHashtag = framingOverlay.querySelector('.upload-form-hashtags');
   var framingOverlayScale = framingOverlay.querySelector('.upload-resize-controls-value');
   var framingOverlayPreview = framingOverlay.querySelector('.effect-image-preview');
+
+  var framingOverlayControls = framingOverlay.querySelector('.upload-effect-controls');
+  var framingOverlayLevel = framingOverlayControls.querySelector('.upload-effect-level');
 
   var onFramingOverlayCancelEscPress = function (evt) {
     window.util.callIfEnterEvent(evt, hideFramingOverlay);
@@ -27,6 +33,8 @@ window.form = (function () {
 
     framingOverlayComment.value = '';
     framingOverlayHashtag.value = '';
+
+    framingOverlayControls.querySelector('#' + NONE_FILTER_ID).click();
 
     uploadInput.value = '';
   };
@@ -120,14 +128,12 @@ window.form = (function () {
   framingOverlayComment.addEventListener('invalid', onInputInvalid);
   framingOverlayHashtag.addEventListener('invalid', onInputInvalid);
 
-  var currentFilter = '';
-  uploadForm.querySelector('.upload-effect-controls').addEventListener('click', function (evt) {
+  framingOverlayControls.addEventListener('click', function (evt) {
     if (evt.target.getAttribute('type') === 'radio') {
-      if (currentFilter) {
-        framingOverlayPreview.classList.remove(currentFilter);
-      }
-      currentFilter = evt.target.getAttribute('id').substring('upload-'.length);
-      framingOverlayPreview.classList.add(currentFilter);
+      framingOverlayPreview.classList.remove(currentFilterId.substring('upload-'.length));
+      currentFilterId = evt.target.getAttribute('id');
+      framingOverlayPreview.classList.add(currentFilterId.substring('upload-'.length));
+      resetFilterLevel();
     }
   });
 
@@ -141,6 +147,106 @@ window.form = (function () {
       uploadForm.submit();
       resetFramingOverlay();
     }
+  });
+
+  var framingOverlayLevelLine = framingOverlayLevel.querySelector('.upload-effect-level-line');
+  var framingOverlayLevelPin = framingOverlayLevel.querySelector('.upload-effect-level-pin');
+  var framingOverlayLevelVal = framingOverlayLevel.querySelector('.upload-effect-level-val');
+
+  var effectLevelSize = 0;
+  var effectLevelWidth = 0;
+  var effectLevelLeft = 0;
+
+  var filterScales = {
+    'upload-effect-chrome': {
+      param: 'grayscale',
+      max: 1,
+      units: ''
+    },
+    'upload-effect-sepia': {
+      param: 'sepia',
+      max: 1,
+      units: ''
+    },
+    'upload-effect-marvin': {
+      param: 'invert',
+      max: 100,
+      units: '%'
+    },
+    'upload-effect-phobos': {
+      param: 'blur',
+      max: 3,
+      units: 'px'
+    },
+    'upload-effect-heat': {
+      param: 'brightness',
+      max: 1,
+      units: ''
+    }
+  };
+
+
+  var setFilterLevelByValue = function (value) {
+    if (value < 0 || value > 1) {
+      return;
+    }
+
+    var valuePercent = Math.round(value * 100) + '%';
+    framingOverlayLevelPin.style.left = valuePercent;
+    framingOverlayLevelVal.style.width = valuePercent;
+
+    var filterScale = null;
+    if (currentFilterId !== NONE_FILTER_ID) {
+      filterScale = filterScales[currentFilterId];
+      framingOverlayPreview.style.setProperty('filter', filterScale.param + '(' + (value * filterScale.max).toFixed(2) + filterScale.units + ')');
+    }
+  };
+
+  var setFilterLevelByPosition = function (x, refreshFilterLevelSizes) {
+    if (refreshFilterLevelSizes) {
+      effectLevelSize = framingOverlayLevelLine.getBoundingClientRect();
+      effectLevelWidth = effectLevelSize.width;
+      effectLevelLeft = effectLevelSize.left;
+    }
+
+    var newLevelVal = 0;
+    if (x <= effectLevelLeft) {
+      newLevelVal = 0;
+    } else if (x >= effectLevelWidth + effectLevelLeft) {
+      newLevelVal = 1;
+    } else {
+      newLevelVal = ((x - effectLevelLeft) / effectLevelWidth);
+    }
+
+    setFilterLevelByValue(newLevelVal);
+  };
+
+  var resetFilterLevel = function () {
+    framingOverlayLevel.classList.toggle('hidden', currentFilterId === NONE_FILTER_ID);
+    framingOverlayLevelPin.style.removeProperty('left');
+    framingOverlayLevelVal.style.removeProperty('width');
+
+    var pinRect = framingOverlayLevelPin.getBoundingClientRect();
+    setFilterLevelByPosition(pinRect.left + pinRect.width / 2, true);
+  };
+
+  framingOverlayLevel.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+    setFilterLevelByPosition(evt.x, true);
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      setFilterLevelByPosition(moveEvt.x, false);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 
   // last: add listener to show the form
