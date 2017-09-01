@@ -5,7 +5,9 @@ window.initializeFilters = (function () {
   return function (element, filterChangeFunction) {
 
     element.addEventListener('click', function (evt) {
-      filterChangeFunction(evt);
+      if (evt.target.getAttribute('name') === 'effect') {
+        filterChangeFunction(evt.target.getAttribute('id'));
+      }
     });
 
   };

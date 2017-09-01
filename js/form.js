@@ -110,17 +110,27 @@ window.form = (function () {
     framingOverlayHashtag.setCustomValidity(checkHashTagValidity());
   });
 
-  // second: add interactivity - add filters handling
+  // second: add interactivity - add filters handling (changing filters)
 
   var framingOverlayLevelLine = framingOverlayLevel.querySelector('.upload-effect-level-line');
   var framingOverlayLevelPin = framingOverlayLevel.querySelector('.upload-effect-level-pin');
   var framingOverlayLevelVal = framingOverlayLevel.querySelector('.upload-effect-level-val');
 
+  var applyFilter = function (newFilterId) {
+    framingOverlayPreview.classList.remove(currentFilterId.substring('upload-'.length));
+    currentFilterId = newFilterId;
+    framingOverlayPreview.classList.add(currentFilterId.substring('upload-'.length));
+    resetFilterLevel();
+  };
+
+  window.initializeFilters(framingOverlayControls, applyFilter);
+
+  // second: add interactivity - add filters handling (adjusting filters)
+
   var effectLevelSize = 0;
   var effectLevelWidth = 0;
   var effectLevelLeft = 0;
-
-  var filterScales = {
+  var FILTER_SCALES = {
     'upload-effect-chrome': {
       param: 'grayscale',
       max: 1,
@@ -148,7 +158,6 @@ window.form = (function () {
     }
   };
 
-
   var setFilterLevelByValue = function (value) {
     if (value < 0 || value > 1) {
       return;
@@ -160,7 +169,7 @@ window.form = (function () {
 
     var filterScale = null;
     if (currentFilterId !== NONE_FILTER_ID) {
-      filterScale = filterScales[currentFilterId];
+      filterScale = FILTER_SCALES[currentFilterId];
       framingOverlayPreview.style.setProperty('filter', filterScale.param + '(' + (value * filterScale.max).toFixed(2) + filterScale.units + ')');
     } else {
       framingOverlayPreview.style.removeProperty('filter');
@@ -194,17 +203,6 @@ window.form = (function () {
     var pinRect = framingOverlayLevelPin.getBoundingClientRect();
     setFilterLevelByPosition(pinRect.left + pinRect.width / 2, true);
   };
-
-  var applyFilter = function (evt) {
-    if (evt.target.getAttribute('name') === 'effect') {
-      framingOverlayPreview.classList.remove(currentFilterId.substring('upload-'.length));
-      currentFilterId = evt.target.getAttribute('id');
-      framingOverlayPreview.classList.add(currentFilterId.substring('upload-'.length));
-      resetFilterLevel();
-    }
-  };
-
-  window.initializeFilters(framingOverlayControls, applyFilter);
 
   framingOverlayLevel.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
