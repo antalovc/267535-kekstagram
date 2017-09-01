@@ -25,35 +25,12 @@ window.form = (function () {
   var framingOverlayScaleControls = framingOverlay.querySelector('.upload-resize-controls');
   var framingOverlayScaleValue = framingOverlayScaleControls.querySelector('.upload-resize-controls-value');
 
-  var adjustScale = function (scale) {
+  var adjustScale = function (element, valueElement, scale) {
+    valueElement.value = scale + '%';
     framingOverlayPreview.style.transform = 'scale(' + scale / 100 + ')';
   };
 
-  var setOverlayScaleValue = function (value) {
-    framingOverlayScaleValue.value = value + '%';
-    framingOverlayScaleValue.dispatchEvent(new Event('change'));
-  };
-
-  var changeFramingOverlayScale = function (increment) {
-    var delta = 25;
-    var value = parseInt(framingOverlayScaleValue.value, 10);
-    value = increment ? value + delta : value - delta;
-    value = (value > 100) ? 100 : value;
-    value = (value < 25) ? 25 : value;
-    setOverlayScaleValue(value);
-  };
-
-  var incrementFramingOverlayScale = function () {
-    changeFramingOverlayScale(true);
-  };
-
-  var decrementFramingOverlayScale = function () {
-    changeFramingOverlayScale(false);
-  };
-
-  framingOverlayScaleControls.querySelector('.upload-resize-controls-button-inc').addEventListener('click', incrementFramingOverlayScale);
-  framingOverlayScaleControls.querySelector('.upload-resize-controls-button-dec').addEventListener('click', decrementFramingOverlayScale);
-  window.initializeScale(framingOverlayScaleControls, adjustScale);
+  window.initializeScale(framingOverlayScaleControls, framingOverlayScaleValue, adjustScale);
 
   // second: add interactivity - add validation handling
 
@@ -246,7 +223,7 @@ window.form = (function () {
   };
 
   var resetFramingOverlay = function () {
-    setOverlayScaleValue(100);
+    framingOverlayScaleValue.value = '100%';
     framingOverlayPreview.style.transform = 'scale(1.00)';
 
     framingOverlayComment.value = '';
