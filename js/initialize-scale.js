@@ -3,12 +3,13 @@
 window.initializeScale = (function () {
 
   return function (element, valueElement, scaleFunction) {
-    var currentScale = parseInt(valueElement.value, 10);
+    var currentScale = 1;
+    var step = +element.getAttribute('step');
+    var min = +element.getAttribute('min');
+    var max = +element.getAttribute('max');
 
     element.addEventListener('click', function (evt) {
-      var step = +element.getAttribute('step');
-      var min = +element.getAttribute('min');
-      var max = +element.getAttribute('max');
+      currentScale = parseInt(valueElement.value, 10);
 
       if (evt.target.textContent[0] === '+') {
         currentScale += step;

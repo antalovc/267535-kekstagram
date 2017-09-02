@@ -7,32 +7,31 @@ window.form = (function () {
 
   var uploadForm = document.querySelector('#upload-select-image');
   var uploadInput = uploadForm.querySelector('#upload-file');
-  var framingOverlay = uploadForm.querySelector('.upload-overlay'); // форма кадрирования
-  var framingOverlayCancel = framingOverlay.querySelector('.upload-form-cancel');
-  var framingOverlayComment = framingOverlay.querySelector('.upload-form-description');
-  var framingOverlayHashtag = framingOverlay.querySelector('.upload-form-hashtags');
-  var framingOverlayPreview = framingOverlay.querySelector('.effect-image-preview');
 
-  var framingOverlayControls = framingOverlay.querySelector('.upload-effect-controls');
-  var framingOverlayLevel = framingOverlayControls.querySelector('.upload-effect-level');
+  var overlay = uploadForm.querySelector('.upload-overlay');
+  var overlayPreview = overlay.querySelector('.effect-image-preview');
+  var overlayControls = overlay.querySelector('.upload-effect-controls');
 
   // first: hide the form
 
-  framingOverlay.classList.add('hidden');
+  overlay.classList.add('hidden');
 
   // second: add interactivity - set scaling handling
 
-  var framingOverlayScaleControls = framingOverlay.querySelector('.upload-resize-controls');
-  var framingOverlayScaleValue = framingOverlayScaleControls.querySelector('.upload-resize-controls-value');
+  var overlayScaleControls = overlay.querySelector('.upload-resize-controls');
+  var overlayScaleValue = overlayScaleControls.querySelector('.upload-resize-controls-value');
 
   var adjustScale = function (element, valueElement, scale) {
     valueElement.value = scale + '%';
-    framingOverlayPreview.style.transform = 'scale(' + scale / 100 + ')';
+    overlayPreview.style.transform = 'scale(' + scale / 100 + ')';
   };
 
-  window.initializeScale(framingOverlayScaleControls, framingOverlayScaleValue, adjustScale);
+  window.initializeScale(overlayScaleControls, overlayScaleValue, adjustScale);
 
   // second: add interactivity - add validation handling
+
+  var overlayComment = overlay.querySelector('.upload-form-description');
+  var overlayHashTag = overlay.querySelector('.upload-form-hashtags');
 
   var onInputInvalid = function (evt) {
     var target = evt.target;
@@ -40,12 +39,13 @@ window.form = (function () {
   };
 
   var checkHashTagValidity = function () {
-    var value = framingOverlayHashtag.value;
+    var MAX_HASTAGS_NUMBER = 5;
+    var MAX_HASHTAG_LENGTH = 20;
+
+    var value = overlayHashTag.value;
     var hashTags = [];
     var splitLength = 0;
     var hashTagsLength = 0;
-    var MAX_HASTAGS_NUMBER = 5;
-    var MAX_HASHTAG_LENGTH = 20;
 
     if (value !== '') {
       hashTags = value.split(' ');
@@ -81,26 +81,28 @@ window.form = (function () {
     return '';
   };
 
-  framingOverlayComment.addEventListener('invalid', onInputInvalid);
-  framingOverlayHashtag.addEventListener('invalid', onInputInvalid);
-  framingOverlayHashtag.addEventListener('change', function () {
-    framingOverlayHashtag.setCustomValidity(checkHashTagValidity());
+  overlayComment.addEventListener('invalid', onInputInvalid);
+  overlayHashTag.addEventListener('invalid', onInputInvalid);
+  overlayHashTag.addEventListener('change', function () {
+    overlayHashTag.setCustomValidity(checkHashTagValidity());
   });
 
   // second: add interactivity - add filters handling (changing filters)
 
-  var framingOverlayLevelLine = framingOverlayLevel.querySelector('.upload-effect-level-line');
-  var framingOverlayLevelPin = framingOverlayLevel.querySelector('.upload-effect-level-pin');
-  var framingOverlayLevelVal = framingOverlayLevel.querySelector('.upload-effect-level-val');
+  var overlayLevel = overlayControls.querySelector('.upload-effect-level');
+  var overlayLevelLine = overlayLevel.querySelector('.upload-effect-level-line');
+  var overlayLevelPin = overlayLevel.querySelector('.upload-effect-level-pin');
+  var overlayLevelVal = overlayLevel.querySelector('.upload-effect-level-val');
+  var defaultLevelPercent = parseInt(overlayLevelPin.style.getPropertyValue('left'), 10);
 
   var applyFilter = function (newFilterId) {
-    framingOverlayPreview.classList.remove(currentFilterId.substring('upload-'.length));
+    overlayPreview.classList.remove(currentFilterId.substring('upload-'.length));
     currentFilterId = newFilterId;
-    framingOverlayPreview.classList.add(currentFilterId.substring('upload-'.length));
+    overlayPreview.classList.add(currentFilterId.substring('upload-'.length));
     resetFilterLevel();
   };
 
-  window.initializeFilters(framingOverlayControls, applyFilter);
+  window.initializeFilters(overlayControls, applyFilter);
 
   // second: add interactivity - add filters handling (adjusting filters)
 
@@ -108,80 +110,66 @@ window.form = (function () {
   var effectLevelWidth = 0;
   var effectLevelLeft = 0;
   var FILTER_SCALES = {
-    'upload-effect-chrome': {
-      param: 'grayscale',
-      max: 1,
-      units: ''
+    'upload-effect-chrome': function (percent) {
+      return 'grayscale(' + percent * 0.01 + ')';
     },
-    'upload-effect-sepia': {
-      param: 'sepia',
-      max: 1,
-      units: ''
+    'upload-effect-sepia': function (percent) {
+      return 'sepia(' + percent * 0.01 + ')';
     },
-    'upload-effect-marvin': {
-      param: 'invert',
-      max: 100,
-      units: '%'
+    'upload-effect-marvin': function (percent) {
+      return 'invert(' + percent + '%)';
     },
-    'upload-effect-phobos': {
-      param: 'blur',
-      max: 3,
-      units: 'px'
+    'upload-effect-phobos': function (percent) {
+      return 'blur(' + percent * 0.03 + 'px)';
     },
-    'upload-effect-heat': {
-      param: 'brightness',
-      max: 1,
-      units: ''
+    'upload-effect-heat': function (percent) {
+      return 'brightness(' + percent * 0.03 + ')';
     }
   };
 
-  var setFilterLevelByValue = function (value) {
-    if (value < 0 || value > 1) {
+  var setFilterLevelByValue = function (percent) {
+    if (percent < 0 || percent > 100) {
       return;
     }
+    percent = Math.round(percent);
 
-    var valuePercent = Math.round(value * 100) + '%';
-    framingOverlayLevelPin.style.left = valuePercent;
-    framingOverlayLevelVal.style.width = valuePercent;
+    var valuePercent = percent + '%';
+    overlayLevelPin.style.left = valuePercent;
+    overlayLevelVal.style.width = valuePercent;
 
-    var filterScale = null;
     if (currentFilterId !== NONE_FILTER_ID) {
-      filterScale = FILTER_SCALES[currentFilterId];
-      framingOverlayPreview.style.setProperty('filter', filterScale.param + '(' + (value * filterScale.max).toFixed(2) + filterScale.units + ')');
+      overlayPreview.style.setProperty('filter', FILTER_SCALES[currentFilterId](percent), '');
     } else {
-      framingOverlayPreview.style.removeProperty('filter');
+      overlayPreview.style.removeProperty('filter');
     }
   };
 
   var setFilterLevelByPosition = function (x, refreshFilterLevelSizes) {
     if (refreshFilterLevelSizes) {
-      effectLevelSize = framingOverlayLevelLine.getBoundingClientRect();
+      effectLevelSize = overlayLevelLine.getBoundingClientRect();
       effectLevelWidth = effectLevelSize.width;
       effectLevelLeft = effectLevelSize.left;
     }
 
-    var newLevelVal = 0;
-    if (x <= effectLevelLeft) {
-      newLevelVal = 0;
-    } else if (x >= effectLevelWidth + effectLevelLeft) {
-      newLevelVal = 1;
-    } else {
-      newLevelVal = ((x - effectLevelLeft) / effectLevelWidth);
+    var newLevelPercent = 0;
+    if (x >= effectLevelWidth + effectLevelLeft) {
+      newLevelPercent = 100;
+    } else if (x > effectLevelLeft) {
+      newLevelPercent = (x - effectLevelLeft) * 100 / effectLevelWidth;
     }
 
-    setFilterLevelByValue(newLevelVal);
+    setFilterLevelByValue(newLevelPercent);
   };
 
   var resetFilterLevel = function () {
-    framingOverlayLevel.classList.toggle('hidden', currentFilterId === NONE_FILTER_ID);
-    framingOverlayLevelPin.style.removeProperty('left');
-    framingOverlayLevelVal.style.removeProperty('width');
+    overlayLevel.classList.toggle('hidden', currentFilterId === NONE_FILTER_ID);
+    overlayLevelPin.style.removeProperty('left');
+    overlayLevelVal.style.removeProperty('width');
 
-    var pinRect = framingOverlayLevelPin.getBoundingClientRect();
-    setFilterLevelByPosition(pinRect.left + pinRect.width / 2, true);
+    setFilterLevelByValue(defaultLevelPercent, true);
   };
 
-  framingOverlayLevel.addEventListener('mousedown', function (evt) {
+  overlayLevel.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     setFilterLevelByPosition(evt.x, true);
 
@@ -212,41 +200,43 @@ window.form = (function () {
 
   // pre-last: add listeners to show/hide the form
 
+  var overlayCancel = overlay.querySelector('.upload-form-cancel');
+
   var onFramingOverlayCancelEscPress = function (evt) {
     window.util.callIfEnterEvent(evt, hideFramingOverlay);
   };
 
   var onFramingOverlayEscPress = function (evt) {
-    if (document.activeElement !== framingOverlayComment) {
+    if (document.activeElement !== overlayComment) {
       window.util.callIfEscEvent(evt, hideFramingOverlay);
     }
   };
 
   var resetFramingOverlay = function () {
-    framingOverlayScaleValue.value = '100%';
-    framingOverlayPreview.style.transform = 'scale(1.00)';
+    overlayScaleValue.value = '100%';
+    overlayPreview.style.transform = 'scale(1.00)';
 
-    framingOverlayComment.value = '';
-    framingOverlayHashtag.value = '';
+    overlayComment.value = '';
+    overlayHashTag.value = '';
 
-    framingOverlayControls.querySelector('#' + NONE_FILTER_ID).click();
+    overlayControls.querySelector('#' + NONE_FILTER_ID).click();
 
     uploadInput.value = '';
   };
 
   var showFramingOverlay = function () {
     document.addEventListener('keydown', onFramingOverlayEscPress);
-    framingOverlay.classList.remove('hidden');
+    overlay.classList.remove('hidden');
   };
 
   var hideFramingOverlay = function () {
     document.removeEventListener('keydown', onFramingOverlayEscPress);
     resetFramingOverlay();
-    framingOverlay.classList.add('hidden');
+    overlay.classList.add('hidden');
   };
 
-  framingOverlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);
-  framingOverlayCancel.addEventListener('click', hideFramingOverlay);
+  overlayCancel.addEventListener('keydown', onFramingOverlayCancelEscPress);
+  overlayCancel.addEventListener('click', hideFramingOverlay);
 
   // last: add listener to show the form
 
