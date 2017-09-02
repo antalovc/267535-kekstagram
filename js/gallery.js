@@ -37,6 +37,6 @@
     addPictureEvents();
   };
 
-  drawPictures(window.picturesData);
+  window.backend.load(drawPictures, window.util.showErrorMessage);
 
 })();

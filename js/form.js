@@ -93,7 +93,7 @@ window.form = (function () {
   var overlayLevelLine = overlayLevel.querySelector('.upload-effect-level-line');
   var overlayLevelPin = overlayLevel.querySelector('.upload-effect-level-pin');
   var overlayLevelVal = overlayLevel.querySelector('.upload-effect-level-val');
-  var defaultLevelPercent = parseInt(overlayLevelPin.style.getPropertyValue('left'), 10);
+  var defaultLevelPercent = null;
 
   var applyFilter = function (newFilterId) {
     overlayPreview.classList.remove(currentFilterId.substring('upload-'.length));
@@ -144,21 +144,24 @@ window.form = (function () {
     }
   };
 
-  var setFilterLevelByPosition = function (x, refreshFilterLevelSizes) {
+  var convertFilterPositionToPercent = function (position, refreshFilterLevelSizes) {
     if (refreshFilterLevelSizes) {
       effectLevelSize = overlayLevelLine.getBoundingClientRect();
       effectLevelWidth = effectLevelSize.width;
       effectLevelLeft = effectLevelSize.left;
     }
 
-    var newLevelPercent = 0;
-    if (x >= effectLevelWidth + effectLevelLeft) {
-      newLevelPercent = 100;
-    } else if (x > effectLevelLeft) {
-      newLevelPercent = (x - effectLevelLeft) * 100 / effectLevelWidth;
+    var percent = 0;
+    if (position >= effectLevelWidth + effectLevelLeft) {
+      percent = 100;
+    } else if (position > effectLevelLeft) {
+      percent = (position - effectLevelLeft) * 100 / effectLevelWidth;
     }
+    return percent;
+  };
 
-    setFilterLevelByValue(newLevelPercent);
+  var setFilterLevelByPosition = function (x, refreshFilterLevelSizes) {
+    setFilterLevelByValue(convertFilterPositionToPercent(x, refreshFilterLevelSizes));
   };
 
   var resetFilterLevel = function () {
@@ -166,11 +169,17 @@ window.form = (function () {
     overlayLevelPin.style.removeProperty('left');
     overlayLevelVal.style.removeProperty('width');
 
+
+    if (defaultLevelPercent === null) {
+      var filterPinRect = overlayLevelPin.getBoundingClientRect();
+      defaultLevelPercent = convertFilterPositionToPercent(filterPinRect.left + filterPinRect.width / 2, true);
+    }
     setFilterLevelByValue(defaultLevelPercent, true);
   };
 
   overlayLevel.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
+
     setFilterLevelByPosition(evt.x, true);
 
     var onMouseMove = function (moveEvt) {
@@ -191,11 +200,13 @@ window.form = (function () {
   // third: add submit handling
 
   uploadForm.addEventListener('submit', function (evt) {
-    evt.preventDefault();
     if (uploadForm.checkValidity()) {
-      uploadForm.submit();
-      resetFramingOverlay();
+      window.backend.save(new FormData(uploadForm), function () {
+        window.util.hideErrorMessage();
+        hideFramingOverlay();
+      }, window.util.showErrorMessage);
     }
+    evt.preventDefault();
   });
 
   // pre-last: add listeners to show/hide the form
