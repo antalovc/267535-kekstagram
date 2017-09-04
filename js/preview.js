@@ -30,7 +30,7 @@ window.preview = (function () {
 
   return {
 
-    showPreviewByUrl: function (picturesData, pictureUrl) {
+    showPreviewByUrl: function (pictureUrl, picturesData) {
       var pictureData = picturesData.find(function (picture) {
         return picture.url === pictureUrl;
       });
