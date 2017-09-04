@@ -23,6 +23,8 @@
   };
 
   var drawPictures = function (pictures) {
+    window.picturesData = pictures;
+
     var picturesBlock = document.querySelector('.pictures');
     var pictureTemplate = document.querySelector('#picture-template').content;
     var fragment = document.createDocumentFragment();
