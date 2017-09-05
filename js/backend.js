@@ -2,7 +2,7 @@
 
 window.backend = (function () {
 
-  var XHR_TIMEOUT = 5000;
+  var XHR_TIMEOUT = 5; // seconds
 
   var URL_LOAD = 'https://1510.dump.academy/kekstagram/data';
   var URL_SAVE = 'https://1510.dump.academy/kekstagram';
@@ -10,7 +10,7 @@ window.backend = (function () {
   var sendXhrRequest = function (type, onSuccess, onError, data) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-    xhr.timeout = XHR_TIMEOUT;
+    xhr.timeout = XHR_TIMEOUT * 1000;
 
     xhr.addEventListener('load', function () {
       switch (xhr.status) {
@@ -27,7 +27,7 @@ window.backend = (function () {
     });
 
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + XHR_TIMEOUT + 'мс');
+      onError('Запрос не успел выполниться за ' + XHR_TIMEOUT + 'с');
     });
 
     var isPost = type === 'POST';
