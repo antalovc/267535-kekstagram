@@ -2,7 +2,7 @@
 
 window.backend = (function () {
 
-  var XHR_TIMEOUT = 5; // seconds
+  var XHR_TIMEOUT = 10; // seconds
 
   var URL_LOAD = 'https://1510.dump.academy/kekstagram/data';
   var URL_SAVE = 'https://1510.dump.academy/kekstagram';
