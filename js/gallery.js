@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+window.gallery = (function () {
 
   var OVERLAY_IMAGE_SELECTOR = 'img';
 
@@ -24,23 +24,36 @@
     }
   };
 
-  var drawPictures = function (pictures) {
-    picturesData = pictures;
+  var drawGallery = function (filterFunction) {
+
+    var picturesToDraw = picturesData.slice();
+    if (typeof filterFunction === 'function') {
+      picturesToDraw = filterFunction(picturesToDraw);
+    }
 
     var picturesBlock = document.querySelector('.pictures');
     var pictureTemplate = document.querySelector('#picture-template').content;
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < pictures.length; i++) {
-      var pictureElement = window.picture.createPictureFromTemplate(pictures[i], pictureTemplate, OVERLAY_IMAGE_SELECTOR);
+    for (var i = 0; i < picturesToDraw.length; i++) {
+      var pictureElement = window.picture.createPictureFromTemplate(picturesToDraw[i], pictureTemplate, OVERLAY_IMAGE_SELECTOR);
       fragment.appendChild(pictureElement);
     }
 
+    picturesBlock.innerHTML = '';
     picturesBlock.appendChild(fragment);
 
     addPictureEvents();
   };
 
-  window.backend.load(drawPictures, window.util.showErrorMessage);
+  window.backend.load(function (pictures) {
+    picturesData = pictures;
+    drawGallery();
+    document.querySelector('.filters').classList.remove('hidden');
+  }, window.util.showErrorMessage);
+
+  return {
+    drawGallery: drawGallery
+  };
 
 })();

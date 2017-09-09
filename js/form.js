@@ -228,7 +228,9 @@ window.form = (function () {
     overlayPreview.style.transform = 'scale(1.00)';
 
     overlayComment.value = '';
+    overlayComment.style.borderColor = 'initial';
     overlayHashTag.value = '';
+    overlayHashTag.style.borderColor = 'initial';
 
     overlayControls.querySelector('#' + NONE_FILTER_ID).click();
 
