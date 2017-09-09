@@ -24,7 +24,7 @@ window.errorMessage = (function () {
       errorMessageDiv.classList.remove('hidden');
     },
 
-    hide : function () {
+    hide: function () {
       errorMessageDiv.classList.add('hidden');
     }
 
