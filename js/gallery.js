@@ -50,7 +50,7 @@ window.gallery = (function () {
     picturesData = pictures;
     drawGallery();
     document.querySelector('.filters').classList.remove('hidden');
-  }, window.util.showErrorMessage);
+  }, window.errorMessage.show);
 
   return {
     drawGallery: drawGallery

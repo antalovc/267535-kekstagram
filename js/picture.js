@@ -14,7 +14,6 @@ window.picture = (function () {
     return pictureElement;
   };
 
-
   return {
     setElementPictureData: setElementPictureData,
     createPictureFromTemplate: createPictureFromTemplate
