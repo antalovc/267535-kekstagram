@@ -3,7 +3,7 @@
 window.errorMessage = (function () {
   var errorMessageDiv = document.createElement('div');
 
-  errorMessageDiv.style = 'z-index: 100; margin: 0px auto; text-align: center; background-color: red; padding: 15px 10px; border: 1px solid;';
+  errorMessageDiv.style.cssText = 'z-index: 100; margin: 0px auto; text-align: center; background-color: red; padding: 15px 10px; border: 1px solid;';
   errorMessageDiv.style.position = 'fixed';
   errorMessageDiv.style.left = 0;
   errorMessageDiv.style.right = 0;
