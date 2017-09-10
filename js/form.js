@@ -202,9 +202,9 @@ window.form = (function () {
   uploadForm.addEventListener('submit', function (evt) {
     if (uploadForm.checkValidity()) {
       window.backend.save(new FormData(uploadForm), function () {
-        window.util.hideErrorMessage();
+        window.errorMessage.hide();
         hideFramingOverlay();
-      }, window.util.showErrorMessage);
+      }, window.errorMessage.show);
     }
     evt.preventDefault();
   });
@@ -237,7 +237,8 @@ window.form = (function () {
     uploadInput.value = '';
   };
 
-  var showFramingOverlay = function () {
+  var showFramingOverlay = function (picture) {
+    overlayPreview.src = picture;
     document.addEventListener('keydown', onFramingOverlayEscPress);
     overlay.classList.remove('hidden');
   };
@@ -253,10 +254,6 @@ window.form = (function () {
 
   // last: add listener to show the form
 
-  uploadInput.addEventListener('change', function () {
-    if (uploadInput.value) {
-      showFramingOverlay();
-    }
-  });
+  window.pictureLoader(uploadInput, showFramingOverlay);
 
 })();
