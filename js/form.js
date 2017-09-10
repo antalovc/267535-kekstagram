@@ -33,16 +33,11 @@ window.form = (function () {
   var overlayComment = overlay.querySelector('.upload-form-description');
   var overlayHashTag = overlay.querySelector('.upload-form-hashtags');
 
-  var onInputInvalid = function (evt) {
-    var target = evt.target;
-    target.style.borderColor = target.validity.valid ? 'initial' : 'red';
-  };
-
-  var checkHashTagValidity = function () {
+  var checkHashTagValidity = function (hashTagInput) {
     var MAX_HASTAGS_NUMBER = 5;
     var MAX_HASHTAG_LENGTH = 20;
 
-    var value = overlayHashTag.value;
+    var value = hashTagInput.value;
     var hashTags = [];
     var splitLength = 0;
     var hashTagsLength = 0;
@@ -58,6 +53,8 @@ window.form = (function () {
 
           if (hashTags[i].indexOf('#') !== 0) {
             return 'Неверный формат хэштег(ов)';
+          } else if (hashTags[i].length === 1) {
+            return 'Хэштег не может быть пустым';
           } else if (hashTags[i].length > MAX_HASHTAG_LENGTH + 1) {
             return 'Длина хэштега не должна превышать ' + MAX_HASHTAG_LENGTH + ' символов';
           }
@@ -81,11 +78,9 @@ window.form = (function () {
     return '';
   };
 
-  overlayComment.addEventListener('invalid', onInputInvalid);
-  overlayHashTag.addEventListener('invalid', onInputInvalid);
-  overlayHashTag.addEventListener('change', function () {
-    overlayHashTag.setCustomValidity(checkHashTagValidity());
-  });
+
+  window.util.addTextInputValidityCheck(overlayComment);
+  window.util.addTextInputValidityCheck(overlayHashTag, checkHashTagValidity);
 
   // second: add interactivity - add filters handling (changing filters)
 

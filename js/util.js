@@ -49,6 +49,20 @@ window.util = (function () {
       }
       return res;
     },
+
+    addTextInputValidityCheck: function (element, customCheckFunction) {
+      element.addEventListener('input', function () {
+        var isValid = false;
+        if (typeof customCheckFunction === 'function') {
+          var validityMessage = customCheckFunction(element);
+          element.setCustomValidity(validityMessage);
+          isValid = validityMessage.length === 0;
+        } else {
+          isValid = element.checkValidity();
+        }
+        element.style.borderColor = isValid ? 'initial' : 'red';
+      });
+    }
   };
 
 })();
