@@ -249,6 +249,6 @@ window.form = (function () {
 
   // last: add listener to show the form
 
-  window.pictureLoader(uploadInput, showFramingOverlay);
+  window.pictureLoader(uploadInput, uploadForm.querySelector('.upload-image'), showFramingOverlay);
 
 })();
