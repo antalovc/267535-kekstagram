@@ -39,14 +39,14 @@
   var filtersList = document.querySelector('.filters');
   var currentFilter = null;
 
-  var updateGallery = function () {
-    window.gallery.drawGallery(SORT_FUNCTIONS[currentFilter]);
+  var update = function () {
+    window.gallery.draw(SORT_FUNCTIONS[currentFilter]);
   };
 
   filtersList.addEventListener('click', function (evt) {
     if (evt.target.type === 'radio') {
       currentFilter = evt.target.id;
-      window.debounce(updateGallery);
+      window.debounce(update);
     }
   });
 

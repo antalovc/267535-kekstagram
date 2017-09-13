@@ -2,39 +2,39 @@
 
 window.preview = (function () {
 
-  var galleryOverlay = document.querySelector('.gallery-overlay');
-  var galleryOverlayClose = galleryOverlay.querySelector('.gallery-overlay-close');
+  var overlay = document.querySelector('.gallery-overlay');
+  var closeElement = overlay.querySelector('.gallery-overlay-close');
 
-  var onGalleryOverlayEscPress = function (evt) {
-    window.util.callIfEscEvent(evt, hideGalleryOverlay);
+  var onEscPress = function (evt) {
+    window.util.callIfEscEvent(evt, hide);
   };
 
-  var onGalleryOverlayCloseEnterPress = function (evt) {
-    window.util.callIfEnterEvent(evt, hideGalleryOverlay);
+  var onCloseEnterPress = function (evt) {
+    window.util.callIfEnterEvent(evt, hide);
   };
 
-  var showPreview = function (picture) {
-    window.picture.setElementPictureData(picture, galleryOverlay, '.gallery-overlay-image', '.likes-count', '.comments-count');
-    document.addEventListener('keydown', onGalleryOverlayEscPress);
-    galleryOverlayClose.addEventListener('keydown', onGalleryOverlayCloseEnterPress);
-    galleryOverlayClose.addEventListener('click', hideGalleryOverlay);
-    galleryOverlay.classList.remove('hidden');
+  var show = function (picture) {
+    window.picture.setElementData(picture, overlay, '.gallery-overlay-image', '.likes-count', '.comments-count');
+    document.addEventListener('keydown', onEscPress);
+    closeElement.addEventListener('keydown', onCloseEnterPress);
+    closeElement.addEventListener('click', hide);
+    overlay.classList.remove('hidden');
   };
 
-  var hideGalleryOverlay = function () {
-    document.removeEventListener('keydown', onGalleryOverlayEscPress);
-    galleryOverlayClose.removeEventListener('keydown', onGalleryOverlayCloseEnterPress);
-    galleryOverlayClose.removeEventListener('click', hideGalleryOverlay);
-    galleryOverlay.classList.add('hidden');
+  var hide = function () {
+    document.removeEventListener('keydown', onEscPress);
+    closeElement.removeEventListener('keydown', onCloseEnterPress);
+    closeElement.removeEventListener('click', hide);
+    overlay.classList.add('hidden');
   };
 
   return {
 
-    showPreviewByUrl: function (pictureUrl, picturesData) {
-      var pictureData = picturesData.find(function (picture) {
-        return picture.url === pictureUrl;
+    show: function (url, data) {
+      var pictureData = data.find(function (picture) {
+        return picture.url === url;
       });
-      showPreview(pictureData);
+      show(pictureData);
     }
 
   };

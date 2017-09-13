@@ -860,3 +860,23 @@ input[type=radio]:checked + .upload-effect-label .upload-effect-preview {
 .footer-social-item-vk {
   background-position: -84px 0;
 }
+
+.message-error {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  margin: 0px auto;
+  padding: 15px 10px;
+  width: 582px;
+
+  z-index: 100;
+
+  border: 1px solid;
+  text-align: center;
+  font-size: 14px;
+  font-family: 'Open Sans';
+  color: #cc0000;
+  background-color: #f99fbc;
+}

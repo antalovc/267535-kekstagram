@@ -2,11 +2,11 @@
 
 window.initializeFilters = (function () {
 
-  return function (element, filterChangeFunction) {
+  return function (element, callback) {
 
     element.addEventListener('click', function (evt) {
       if (evt.target.getAttribute('name') === 'effect') {
-        filterChangeFunction(evt.target.getAttribute('id'));
+        callback(evt.target.getAttribute('id'));
       }
     });
 
