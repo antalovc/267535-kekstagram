@@ -6,7 +6,7 @@ window.pictureLoader = (function () {
 
   var reader = new FileReader();
 
-  var handleFileInput = function (file, callback) {
+  var handleInput = function (file, callback) {
     var fileName = file.name.toLowerCase();
 
     if (FILE_TYPES.some(function (it) {
@@ -23,12 +23,12 @@ window.pictureLoader = (function () {
 
     fileInput.addEventListener('change', function () {
       if (fileInput.value) {
-        handleFileInput(fileInput.files[0], callback)
+        handleInput(fileInput.files[0], callback)
       }
     });
 
     window.addEventListener("drop", function (evt) {
-      handleFileInput(evt.dataTransfer.files[0], callback)
+      handleInput(evt.dataTransfer.files[0], callback)
       evt.preventDefault();
     }, false);
 

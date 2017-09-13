@@ -5,7 +5,7 @@ window.util = (function () {
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
 
-  var generateRandomIntegerFromRange = function (min, max) {
+  var getRandomIntegerFromRange = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
@@ -18,7 +18,7 @@ window.util = (function () {
     var tmp = 0;
     var randomId = 0;
     for (var j = 0; j < nElements; j++) {
-      randomId = generateRandomIntegerFromRange(0, nElements - 1);
+      randomId = getRandomIntegerFromRange(0, nElements - 1);
       tmp = res[j];
       res[j] = res[randomId];
       res[randomId] = tmp;
@@ -40,11 +40,11 @@ window.util = (function () {
       }
     },
 
-    getNRandomArrayItems: function (array, n) {
-      var permutation = generateIndexesPermutation(array.length);
+    getNRandomArrayItems: function (items, n) {
+      var permutation = generateIndexesPermutation(items.length);
       var res = [];
       while (n > 0) {
-        res.push(array[permutation[n - 1] - 1]);
+        res.push(items[permutation[n - 1] - 1]);
         n--;
       }
       return res;

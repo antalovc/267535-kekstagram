@@ -2,7 +2,7 @@
 
 window.initializeScale = (function () {
 
-  return function (element, valueElement, scaleFunction) {
+  return function (element, valueElement, callback) {
     var currentScale = 1;
     var step = +element.getAttribute('step');
     var min = +element.getAttribute('min');
@@ -20,7 +20,7 @@ window.initializeScale = (function () {
       currentScale = (currentScale > max) ? max : currentScale;
       currentScale = (currentScale < min) ? min : currentScale;
 
-      scaleFunction(element, valueElement, currentScale);
+      callback(element, valueElement, currentScale);
     });
 
   };
