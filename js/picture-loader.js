@@ -23,16 +23,16 @@ window.pictureLoader = (function () {
 
     fileInput.addEventListener('change', function () {
       if (fileInput.value) {
-        handleInput(fileInput.files[0], callback)
+        handleInput(fileInput.files[0], callback);
       }
     });
 
-    window.addEventListener("drop", function (evt) {
-      handleInput(evt.dataTransfer.files[0], callback)
+    window.addEventListener('drop', function (evt) {
+      handleInput(evt.dataTransfer.files[0], callback);
       evt.preventDefault();
     }, false);
 
-    window.addEventListener("dragover", function (evt) {
+    window.addEventListener('dragover', function (evt) {
       evt.preventDefault();
     }, false);
 
