@@ -9,6 +9,7 @@ window.form = (function () {
   var MAX_HASTAGS_NUMBER = 5;
   var MAX_HASHTAG_LENGTH = 20;
   var HASHTAG_SEPARATOR = ' ';
+  var FULL_SCALE = 100;
 
   var FILTER_SCALES = {
     'upload-effect-chrome': function (percent) {
@@ -48,7 +49,7 @@ window.form = (function () {
 
   var adjustScale = function (element, valueElement, scale) {
     valueElement.value = scale + '%';
-    overlayPreviewElement.style.transform = 'scale(' + scale / 100 + ')';
+    overlayPreviewElement.style.transform = 'scale(' + scale / FULL_SCALE + ')';
   };
 
   window.initializeScale(overlayScaleElements, overlayScaleValueElement, adjustScale);
@@ -152,9 +153,9 @@ window.form = (function () {
 
     var percent = 0;
     if (position >= effectLevelWidth + effectLevelLeft) {
-      percent = 100;
+      percent = FULL_SCALE;
     } else if (position > effectLevelLeft) {
-      percent = (position - effectLevelLeft) * 100 / effectLevelWidth;
+      percent = (position - effectLevelLeft) * FULL_SCALE / effectLevelWidth;
     }
     return percent;
   };
@@ -211,8 +212,12 @@ window.form = (function () {
 
   var overlayCancelElement = overlayElement.querySelector('.upload-form-cancel');
 
-  var onFramingOverlayCancelEscPress = function (evt) {
+  var onFramingOverlayCancelEnterPress = function (evt) {
     window.util.callIfEnterEvent(evt, hideFramingOverlay);
+  };
+
+  var onFramingOverlayCancelClick = function () {
+    hideFramingOverlay();
   };
 
   var onFramingOverlayEscPress = function (evt) {
@@ -247,8 +252,8 @@ window.form = (function () {
     overlayElement.classList.add('hidden');
   };
 
-  overlayCancelElement.addEventListener('keydown', onFramingOverlayCancelEscPress);
-  overlayCancelElement.addEventListener('click', hideFramingOverlay);
+  overlayCancelElement.addEventListener('keydown', onFramingOverlayCancelEnterPress);
+  overlayCancelElement.addEventListener('click', onFramingOverlayCancelClick);
 
   // last: add listener to show the form
 

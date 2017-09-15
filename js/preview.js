@@ -13,18 +13,22 @@ window.preview = (function () {
     window.util.callIfEnterEvent(evt, hide);
   };
 
+  var onCloseClick = function () {
+    hide();
+  };
+
   var show = function (picture) {
     window.picture.setElementData(picture, previewElement, '.gallery-overlay-image', '.likes-count', '.comments-count');
     document.addEventListener('keydown', onEscPress);
     previewCloseElement.addEventListener('keydown', onCloseEnterPress);
-    previewCloseElement.addEventListener('click', hide);
+    previewCloseElement.addEventListener('click', onCloseClick);
     previewElement.classList.remove('hidden');
   };
 
   var hide = function () {
     document.removeEventListener('keydown', onEscPress);
     previewCloseElement.removeEventListener('keydown', onCloseEnterPress);
-    previewCloseElement.removeEventListener('click', hide);
+    previewCloseElement.removeEventListener('click', onCloseClick);
     previewElement.classList.add('hidden');
   };
 
