@@ -8,6 +8,7 @@ window.form = (function () {
 
   var MAX_HASTAGS_NUMBER = 5;
   var MAX_HASHTAG_LENGTH = 20;
+  var HASHTAG_SEPARATOR = ' ';
 
   var FILTER_SCALES = {
     'upload-effect-chrome': function (percent) {
@@ -64,7 +65,7 @@ window.form = (function () {
     var hashTagsLength = 0;
 
     if (value !== '') {
-      hashTags = value.split(' ');
+      hashTags = value.split(HASHTAG_SEPARATOR);
       splitLength = hashTags.length;
 
       for (var i = 0; i < splitLength; i++) {
@@ -72,7 +73,7 @@ window.form = (function () {
 
           hashTagsLength++;
 
-          if (hashTags[i].indexOf('#') !== 0) {
+          if (hashTags[i].indexOf('#') !== 0 || hashTags[i].lastIndexOf('#') !== 0) {
             return 'Неверный формат хэштег(ов)';
           } else if (hashTags[i].length === 1) {
             return 'Хэштег не может быть пустым';

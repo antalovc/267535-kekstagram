@@ -1,20 +1,20 @@
 'use strict';
 
 window.errorMessage = (function () {
-  var errorMessageDiv = document.createElement('div');
-  errorMessageDiv.classList.add('message-error');
-  errorMessageDiv.classList.add('hidden');
-  document.body.insertAdjacentElement('afterbegin', errorMessageDiv);
+  var errorMessageElement = document.createElement('div');
+  errorMessageElement.classList.add('message-error');
+  errorMessageElement.classList.add('hidden');
+  document.body.insertAdjacentElement('afterbegin', errorMessageElement);
 
   return ({
 
     show: function (errorMessage) {
-      errorMessageDiv.textContent = errorMessage;
-      errorMessageDiv.classList.remove('hidden');
+      errorMessageElement.textContent = errorMessage;
+      errorMessageElement.classList.remove('hidden');
     },
 
     hide: function () {
-      errorMessageDiv.classList.add('hidden');
+      errorMessageElement.classList.add('hidden');
     }
 
   });

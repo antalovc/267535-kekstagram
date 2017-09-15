@@ -2,6 +2,9 @@
 
 window.initializeScale = (function () {
 
+  var INCREASE_ELEMENT_TEXT = '+';
+  var DECREASE_ELEMENT_TEXT = '–';
+
   return function (element, valueElement, callback) {
     var currentScale = 1;
     var step = +element.getAttribute('step');
@@ -11,9 +14,9 @@ window.initializeScale = (function () {
     element.addEventListener('click', function (evt) {
       currentScale = parseInt(valueElement.value, 10);
 
-      if (evt.target.textContent[0] === '+') {
+      if (evt.target.textContent[0] === INCREASE_ELEMENT_TEXT) {
         currentScale += step;
-      } else if (evt.target.textContent[0] === '–') {
+      } else if (evt.target.textContent[0] === DECREASE_ELEMENT_TEXT) {
         currentScale -= step;
       }
 

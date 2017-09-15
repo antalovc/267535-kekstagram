@@ -36,10 +36,10 @@ window.gallery = (function () {
     }
 
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < picturesToDraw.length; i++) {
-      var pictureElement = window.picture.createFromTemplate(picturesToDraw[i], templateElement, OVERLAY_IMAGE_SELECTOR);
+    picturesToDraw.forEach(function (picture) {
+      var pictureElement = window.picture.createFromTemplate(picture, templateElement, OVERLAY_IMAGE_SELECTOR);
       fragment.appendChild(pictureElement);
-    }
+    });
 
     containerElement.innerHTML = '';
     containerElement.appendChild(fragment);

@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var SWITCHING_ELEMENT_TYPE = 'radio';
+
   var SORT_FUNCTIONS = {
 
     'filter-recommend': function (data) {
@@ -9,25 +11,13 @@
 
     'filter-popular': function (data) {
       return data.sort(function (left, right) {
-        var res = 0;
-        if (left.likes > right.likes) {
-          res = -1;
-        } else if (left.likes < right.likes) {
-          res = 1;
-        }
-        return res;
+        return right.likes - left.likes;
       });
     },
 
     'filter-discussed': function (data) {
       return data.sort(function (left, right) {
-        var res = 0;
-        if (left.comments.length > right.comments.length) {
-          res = -1;
-        } else if (left.comments.length < right.comments.length) {
-          res = 1;
-        }
-        return res;
+        return right.comments.length - left.comments.length;
       });
     },
 
@@ -36,15 +26,15 @@
     }
   };
 
-  var filtersList = document.querySelector('.filters');
+  var filterListElement = document.querySelector('.filters');
   var currentFilter = null;
 
   var update = function () {
     window.gallery.draw(SORT_FUNCTIONS[currentFilter]);
   };
 
-  filtersList.addEventListener('click', function (evt) {
-    if (evt.target.type === 'radio') {
+  filterListElement.addEventListener('click', function (evt) {
+    if (evt.target.type === SWITCHING_ELEMENT_TYPE) {
       currentFilter = evt.target.id;
       window.debounce(update);
     }
