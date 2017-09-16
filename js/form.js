@@ -9,7 +9,8 @@ window.form = (function () {
   var MAX_HASTAGS_NUMBER = 5;
   var MAX_HASHTAG_LENGTH = 20;
   var HASHTAG_SEPARATOR = ' ';
-  var FULL_SCALE = 100;
+  var SCALE_SCALE_MAX = 100;
+  var FILTER_SCALE_MAX = 100;
 
   var FILTER_SCALES = {
     'upload-effect-chrome': function (percent) {
@@ -49,7 +50,7 @@ window.form = (function () {
 
   var adjustScale = function (element, valueElement, scale) {
     valueElement.value = scale + '%';
-    overlayPreviewElement.style.transform = 'scale(' + scale / FULL_SCALE + ')';
+    overlayPreviewElement.style.transform = 'scale(' + scale / SCALE_SCALE_MAX + ')';
   };
 
   window.initializeScale(overlayScaleElements, overlayScaleValueElement, adjustScale);
@@ -153,9 +154,9 @@ window.form = (function () {
 
     var percent = 0;
     if (position >= effectLevelWidth + effectLevelLeft) {
-      percent = FULL_SCALE;
+      percent = FILTER_SCALE_MAX;
     } else if (position > effectLevelLeft) {
-      percent = (position - effectLevelLeft) * FULL_SCALE / effectLevelWidth;
+      percent = (position - effectLevelLeft) * FILTER_SCALE_MAX / effectLevelWidth;
     }
     return percent;
   };
